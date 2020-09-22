@@ -1,0 +1,66 @@
+pipeline {
+    agent any
+    environment {
+        registry = "albernana/champion"         /* dockerhub_account/repository_name */
+        registryCredential = 'DockerID'         /* dockerhub credentials */
+
+
+    }
+    stages {
+        stage('Cloning our Git') {
+            steps {
+                git 'https://github.com/AlbertN1234/devops-code.git'                  /* git url link */
+            }
+        }
+        stage ('Build') {                       /* step to to build the job */
+            steps {
+                echo 'Building...'  
+                sh 'mvn clean'
+                sh 'mvn install'
+                sh 'mvn package'
+                sleep 5
+
+            }
+        }
+        stage ('Test') {                        /* step to test the build */
+            steps {
+                echo 'Testing...'
+                sh 'mvn test'
+                sleep 5
+             }
+            
+        }
+        stage('Building our image') {                       /* building our image */
+            when {
+                expression {
+                    currentBuild.result == null  || currentBuild.result == 'SUCCESS'
+                }
+                steps {
+                script {
+                    dockerImage = docker.build register + ":$BUILD_NUMBER"
+                }
+                    
+                }
+            }
+        
+            }
+        stage ('Deploy our image') {
+            steps {
+                script {
+                    docker.withRegistry('', registryCredential ) {
+                        dockerImage.push ()
+                    }
+
+                }
+            }
+        }
+        stage ('Cleaning up') {
+            steps{
+                sh "docker rmi $registry:$BUILD_NUMBER"      
+                sleep 3      
+            }
+        }
+
+        }
+    }
+}
