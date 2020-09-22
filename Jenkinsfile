@@ -17,10 +17,10 @@ pipeline {
             }
         }
         stage ('Test') {
-            when {
+            /* when {
                 expression
                 currentBuild.result == null || currentBuild.result == 'SUCCESS'
-            }
+            } */
             steps {
                 echo "test step"
                 sh 'mvn test'
