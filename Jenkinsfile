@@ -7,6 +7,7 @@ pipeline {
     environment {
         registry = "albernana/tomcat_image"
         registryCredential = 'DockerID'
+        dockerImage = ''
     }
     stages {
         stage ('Build') {
@@ -26,10 +27,18 @@ pipeline {
                 sh 'mvn test'
             }
         }
-        stage ('Deploy') {
+        stage ('Building image') {
             steps {
                 script {
-                    docker.build registry + ":$BUILD_NUMBER"
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
+        }
+        stage ('Deploy image') {
+            steps {
+                script {
+                    docker.withRegistry('', registryCredential )
+                    dockerImage.push()
                 }
             }
         }
