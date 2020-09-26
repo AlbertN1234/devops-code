@@ -42,11 +42,6 @@ pipeline {
                 }
             }
         }
-        stage ('Clean up') {
-            steps {
-                sh 'mvn clean'
-            }
-        }
     }
 
 }
