@@ -34,6 +34,15 @@ pipeline {
                 }
             }
         }
+        stage ('Deploy Image') {
+            steps {
+                 script {
+                    docker.withRegistry( 'registry', registryCredential ) {
+                    dockerImage.push ()
+          }
+        }
+      }
+    }
         stage ('Clean up') {
             steps {
                 sh 'mvn clean'
