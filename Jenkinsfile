@@ -6,7 +6,7 @@ pipeline {
     }
     environment {
         registry = "albernana/tomcat_image"
-        registryCredential = 'DockerID'
+        registryCredential = 'P@p@cheri2'
         dockerImage = ''
     }
     stages {
