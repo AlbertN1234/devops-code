@@ -37,9 +37,14 @@ pipeline {
         stage ('Deploy image') {
             steps {
                 script {
-                    docker.withRegistry('', registryCredential )
+                    docker.withRegistry('https://hub.docker.com/', registryCredential )
                     dockerImage.push()
                 }
+            }
+        }
+        stage ('Clean up') {
+            steps {
+                sh 'mvn clean'
             }
         }
     }
