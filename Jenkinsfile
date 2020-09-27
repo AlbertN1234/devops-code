@@ -37,11 +37,18 @@ pipeline {
         stage ('Deploy Image') {
             steps {
                  script {
-                    docker.withRegistry( 'https://hub.docker.com', registryCredential ) {
+                    docker.withRegistry( '', registryCredential ) {
                     dockerImage.push ()
           }
         }
       }
+   }
+        def dockerImage
+        stage ('publish docker') {
+        withCredentials([usernamePassword(credentialsId: 'myregistry-login', passwordVariable: 'DOCKER_REGISTRY_PWD', usernameVariable: 'DOCKER_REGISTRY_USER')]) {
+            /* assumes Jib is configured to use the environment variables */
+            sh "./mvnw -ntp jib:build"
+        }
     }
         stage ('Clean up') {
             steps {
